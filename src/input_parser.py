@@ -47,7 +47,7 @@ def convert_user_input_to_standard_format(user_input: str) -> str:
         title_match = title_pattern.search(slide)
         if title_match:
             title = title_match.group(1).strip()
-            converted_text.append(f"## {title} [Title and Content 3]")
+            converted_text.append(f"## {title} [Title ]")
         
         # 找到要点
         points_section = points_pattern.split(slide)
@@ -77,7 +77,7 @@ def parse_input_text(input_text: str, layout_mapping: dict) -> PowerPoint:
     presentation_title = ""
     slides = []
     current_slide: Optional[Slide] = None
-
+    # print(layout_mapping)
     slide_title_pattern = re.compile(r'^##\s+(.*?)\s+\[(.*?)\]')
     bullet_pattern = re.compile(r'^-\s+(.*)')
     image_pattern = re.compile(r'!\[.*?\]\((.*?)\)')
@@ -90,7 +90,7 @@ def parse_input_text(input_text: str, layout_mapping: dict) -> PowerPoint:
             match = slide_title_pattern.match(line)
             if match:
                 title, layout_name = match.groups()
-                layout_index = layout_mapping.get(layout_name.strip(), 1)
+                layout_index = layout_mapping.get(layout_name, 1)
                 if current_slide:
                     slides.append(current_slide)
                 current_slide = Slide(layout=layout_index, content=SlideContent(title=title.strip()))
@@ -107,5 +107,6 @@ def parse_input_text(input_text: str, layout_mapping: dict) -> PowerPoint:
 
     if current_slide:
         slides.append(current_slide)
+    # print(slides)
 
     return PowerPoint(title=presentation_title, slides=slides), presentation_title
